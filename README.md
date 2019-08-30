@@ -43,13 +43,13 @@ Once an interesting event is detected, a notification will be sent to slack usin
 
 # Install
 
-Checkout this repo and you can use this example [deployment manifest file](https://github.com/pidah/k8s-event-notifier/blob/master/manifests/deployment.yaml) as follows:
+Checkout this repo and you can use this example [deployment manifest file](https://github.com/pearsontechnology/k8s-event-notifier/blob/master/manifests/deployment.yaml) as follows:
 
 ```
 kubectl create -f manifests/deployment.yaml
 ```
 
-and a sample [RBAC manifest file](https://github.com/pidah/k8s-event-notifier/blob/master/manifests/rbac.yaml) if required:
+and a sample [RBAC manifest file](https://github.com/pearsontechnology/k8s-event-notifier/blob/master/manifests/rbac.yaml) if required:
 
 ```
 kubectl create -f manifests/rbac.yaml

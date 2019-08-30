@@ -22,7 +22,9 @@ spec:
           value: TriggeredScaleUp
         - name: SLACK_API_URL
           value: https://hooks.slack.com/services/RANDOM12/BFMADBNDS/0cYHvK1a9xviCsjakjawTMaa
-        image: pearsontechnology/k8s-event-notifier:1
+        - name: SLACK_TEXT
+          value: "k8s-event-notifier:"
+        image: pearsontechnology/k8s-event-notifier:4
         command: ["/k8s-event-notifier"]
         args:
         - --logtostderr
