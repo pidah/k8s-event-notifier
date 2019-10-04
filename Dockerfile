@@ -1,10 +1,10 @@
-FROM golang:1.10-alpine as builder
+FROM golang:1.13-alpine as builder
 
 RUN apk --update add gcc libc-dev
 
-ADD . /go/src/github.com/pearsontechnology/k8s-event-notifier
+ADD . /go/src/github.com/pidah/k8s-event-notifier
 
-WORKDIR /go/src/github.com/pearsontechnology/k8s-event-notifier
+WORKDIR /go/src/github.com/pidah/k8s-event-notifier
 
 RUN go build -buildmode=pie -ldflags "-linkmode external -extldflags -static -w" -o k8s-event-notifier
 
@@ -12,7 +12,7 @@ FROM alpine
 
 RUN apk --update add ca-certificates
 
-COPY --from=builder /go/src/github.com/pearsontechnology/k8s-event-notifier /
+COPY --from=builder /go/src/github.com/pidah/k8s-event-notifier /
 
 # Create a group and user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup

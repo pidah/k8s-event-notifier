@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: k8s-event-notifier
-  namespace: kube-system
+  namespace: default
   labels:
     app: k8s-event-notifier
 spec:
@@ -19,12 +19,12 @@ spec:
       - name: k8s-event-notifier
         env:
         - name: EVENT_FILTER
-          value: TriggeredScaleUp
+          value: FailedGetResourceMetric,FailedComputeMetricsReplicas,Unhealthy
         - name: SLACK_API_URL
           value: https://hooks.slack.com/services/RANDOM12/BFMADBNDS/0cYHvK1a9xviCsjakjawTMaa
         - name: SLACK_TEXT
           value: "k8s-event-notifier:"
-        image: pearsontechnology/k8s-event-notifier:4
+        image: pidah/k8s-event-notifier:25
         command: ["/k8s-event-notifier"]
         args:
         - --logtostderr
