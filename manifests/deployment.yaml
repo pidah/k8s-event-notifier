@@ -19,7 +19,7 @@ spec:
       - name: k8s-event-notifier
         env:
         - name: EVENT_FILTER
-          value: FailedGetResourceMetric,FailedComputeMetricsReplicas,Unhealthy
+          value: FailedGetResourceMetric,FailedComputeMetricsReplicas,Unhealthy,Failed,Killing
         - name: SLACK_API_URL
           value: https://hooks.slack.com/services/RANDOM12/BFMADBNDS/0cYHvK1a9xviCsjakjawTMaa
         - name: SLACK_TEXT
