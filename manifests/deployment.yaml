@@ -24,7 +24,7 @@ spec:
           value: https://hooks.slack.com/services/RANDOM12/BFMADBNDS/0cYHvK1a9xviCsjakjawTMaa
         - name: SLACK_TEXT
           value: "ethereum-data-fetcher:"
-        image: ethereum-data-fetcher:15
+        image: ethereum-data-fetcher:18
         command: ["/ethereum-data-fetcher"]
         args:
         - --logtostderr

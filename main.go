@@ -65,7 +65,7 @@ func main() {
 						Name:      k8s.String("ethereum-data"),
 						Namespace: k8s.String(*n.Metadata.Name),
 					},
-					Data: map[string]string{"ethereum_address": n.Metadata.Labels["ethereum_address"], "account_balance": "66666666"},
+					Data: map[string]string{"ethereum_address": n.Metadata.Labels["ethereum_address"], "account_balance": balance.String()},
 				}
 				if err := client.Create(context.Background(), configMap); err != nil {
 					if strings.Contains(err.Error(), "409") {
