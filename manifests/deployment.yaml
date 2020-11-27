@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: k8s-event-notifier
+  name: ethereum-data-fetcher
   namespace: default
   labels:
-    app: k8s-event-notifier
+    app: ethereum-data-fetcher
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: k8s-event-notifier
+      app: ethereum-data-fetcher
   template:
     metadata:
       labels:
-        app: k8s-event-notifier
+        app: ethereum-data-fetcher
     spec:
       containers:
-      - name: k8s-event-notifier
+      - name: ethereum-data-fetcher
         env:
         - name: EVENT_FILTER
-          value: FailedGetResourceMetric,FailedComputeMetricsReplicas,Unhealthy,Failed,Killing
+          value: FailedGetResourceMetric,FailedComputeMetricsReplicas,Unhealthy,Failed,Killing,Scheduled,Pulled,Started,Created
         - name: SLACK_API_URL
           value: https://hooks.slack.com/services/RANDOM12/BFMADBNDS/0cYHvK1a9xviCsjakjawTMaa
         - name: SLACK_TEXT
-          value: "k8s-event-notifier:"
-        image: pidah/k8s-event-notifier:25
-        command: ["/k8s-event-notifier"]
+          value: "ethereum-data-fetcher:"
+        image: ethereum-data-fetcher:15
+        command: ["/ethereum-data-fetcher"]
         args:
         - --logtostderr
         - -v=4

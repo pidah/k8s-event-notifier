@@ -2,36 +2,31 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"os"
 	"strings"
 
-	"github.com/bluele/slack"
 	"github.com/ericchiang/k8s"
 	corev1 "github.com/ericchiang/k8s/apis/core/v1"
+	metav1 "github.com/ericchiang/k8s/apis/meta/v1"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 func main() {
 
-	log.Print("Starting k8s-event-notifier...")
-
-	var hookURL = os.Getenv("SLACK_API_URL")
-	var slackText = os.Getenv("SLACK_TEXT")
-	var eventFilter = strings.Split(os.Getenv("EVENT_FILTER"), ",")
-	reasonList := []string{}
-	reasonList = append(reasonList, eventFilter...)
+	log.Print("Starting ethereum-data-fetcher...")
 
 	client, err := k8s.NewInClusterClient()
 	if err != nil {
 		log.Printf("Client ERROR: %s\n", err.Error())
 	}
 
-	k8s.Register("", "v1", "events", false, &corev1.Event{})
-	var events corev1.Event
+	var namespace corev1.Namespace
 
 	for {
 
-		watcher, err := client.Watch(context.Background(), "", &events)
+		watcher, err := client.Watch(context.Background(), "", &namespace)
 
 		if err != nil {
 			log.Printf("Watch ERROR: %s\n", err.Error())
@@ -39,39 +34,50 @@ func main() {
 
 		defer watcher.Close()
 
-	EventLoop:
+	WatchLoop:
 
 		for {
-			e := new(corev1.Event)
-			_, err := watcher.Next(e)
+			n := new(corev1.Namespace)
+
+			_, err := watcher.Next(n)
 			if err != nil {
-				log.Printf("Event ERROR: %s\n", err.Error())
+				log.Printf("Watch ERROR: %s\n", err.Error())
 				watcher.Close()
-				break EventLoop
+				break WatchLoop
 			}
-			if ok := stringInSlice(*e.Reason, reasonList); ok {
-				log.Print(*e.InvolvedObject.Name, *e.Message)
-				text := *e.InvolvedObject.Name + " in " + *e.InvolvedObject.Namespace + " namespace"
-				hook := slack.NewWebHook(hookURL)
-				err := hook.PostMessage(&slack.WebHookPostPayload{
-					Text: slackText,
-					Attachments: []*slack.Attachment{
-						{Title: *e.Message, Text: text, Color: "#9741f4", Pretext: *e.Reason},
-					},
-				})
+
+			log.Println(*n.Metadata.Name, n.Metadata.Labels["ethereum_address"])
+			if n.Metadata.Labels["ethereum_address"] != "" {
+				eth_client, err := ethclient.Dial("https://mainnet.infura.io/v3/70ca5e48e7cb47079e0377062b461ec2")
 				if err != nil {
-					log.Printf("Slack Post ERROR: %s\n", err.Error())
+					log.Fatal(err)
+				}
+
+				//	account := common.HexToAddress("0xC09e427f7F282172Cc84Ec48eFb30C2F7576D303")
+				account := common.HexToAddress(n.Metadata.Labels["ethereum_address"])
+				balance, err := eth_client.BalanceAt(context.Background(), account, nil)
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println(balance)
+				configMap := &corev1.ConfigMap{
+					Metadata: &metav1.ObjectMeta{
+						Name:      k8s.String("ethereum-data"),
+						Namespace: k8s.String(*n.Metadata.Name),
+					},
+					Data: map[string]string{"ethereum_address": n.Metadata.Labels["ethereum_address"], "account_balance": "66666666"},
+				}
+				if err := client.Create(context.Background(), configMap); err != nil {
+					if strings.Contains(err.Error(), "409") {
+						if err := client.Update(context.Background(), configMap); err != nil {
+							log.Printf("ConfigMap Update ERROR: %s\n", err.Error())
+						}
+					}
+
+				} else {
+					log.Printf("ConfigMap Create ERROR: %s\n", err.Error())
 				}
 			}
 		}
 	}
-}
-
-func stringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
 }
