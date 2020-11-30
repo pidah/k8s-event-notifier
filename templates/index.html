@@ -1,0 +1,53 @@
+
+<html lang="en">
+
+<head>
+    <title>Ethereum Data fetcher</title>
+    <link rel="stylesheet" href="static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>Retrieve Ethereum Data </h1>
+                <p>App queries Infura API to retrieve eth_getBalance, eth_getTransactionByBlockNumberAndIndex & eth_getBlockByNumber.</p>
+            </div>
+        </div>
+
+        <div class="card-body">
+        <form action="/query" method="POST">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="ethereum-data">Enter an ethereum address:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">e.g. 0xf71e4b6c2cdfcd83435f357aecd32994f0c69bc3 </span>
+                            </div>
+                            <input type="text" class="form-control" id="ethereum-data" aria-describedby="basic-addon3" name="ethereum-data" required>
+                            <span class="input-group-btn">
+                                <input type="submit" class="btn btn-primary pull-right" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+
+        <li class="card">
+            <ul class="list-group">
+               <li class="list-group-item  list-group-item-info"  >Ethereum Data:</li>
+               {{ range $key, $value := . }}
+                   <li><strong>{{ $key }}</strong>: {{ $value }}</li>
+               {{ end }}
+           </ul>
+       </li>
+    </div>
+
+    <script src="static/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
