@@ -29,7 +29,7 @@ spec:
           value: BackOff,Failed,FailedScheduling,Killing
         - name: SLACK_API_URL
           value: https://hooks.slack.com/services/RANDOM12/BFMADBNDS/0cYHvK1a9xviCsjakjawTMaa
-        image: pearsontechnology/k8s-event-notifier:1
+        image: ghcr.io/pidah/k8s-event-notifier:master
         command: ["/k8s-event-notifier"]
         args:
         - --logtostderr
